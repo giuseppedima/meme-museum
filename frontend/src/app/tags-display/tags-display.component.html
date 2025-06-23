@@ -1,0 +1,9 @@
+<div class="{{ containerClass }}" [style]="scrollbarStyle">
+  @for (tag of tags; track tag.id) {
+    <a routerLink="/memes" 
+      [queryParams]="{ tags: [tag.name] }"
+      class="flex-shrink-0 me-1">
+      <span class="badge {{ badgeClass }}">{{ tag.name }}</span>
+    </a>
+  }
+</div>

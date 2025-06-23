@@ -1,0 +1,53 @@
+<!--begin::Container-->
+<div class="container-fluid">
+  <!--begin::Row-->
+  <!-- Meme of the Day Section -->
+  <div class="row mt-4" id="todaysmeme">
+    <div class="col-12">
+      <div class="card shadow">
+        <div class="card-header text-dark text-center position-relative">
+          <h3 class="card-title mb-0">
+            <i class="bi bi-trophy-fill me-2"></i>
+            Today's Community Champion Meme! <i class="bi bi-award-fill text-primary"></i>
+          </h3>
+          <span class="position-absolute top-0 end-0 mt-2 me-3">
+            <i class="bi bi-star-fill text-primary"></i>
+            <i class="bi bi-star-fill text-primary"></i>
+            <i class="bi bi-star-fill text-primary"></i>
+          </span>
+        </div>
+        <div class="card-body text-center py-4">
+          <p class="mb-4">
+            Every day, our administrators select the most epic, hilarious,
+            or downright ridiculous meme. Will today's winner make you snort-laugh?
+            There's only one way to find out! <i class="bi bi-question-circle text-primary"></i><i class="bi bi-lightbulb text-warning"></i>
+          </p>
+          <div class="mb-3">
+            <small class="text-muted">
+              <i class="bi bi-clock me-1"></i>
+              Updates daily at midnight (because memes never sleep!)
+            </small>
+          </div>
+          @if(dailyMemeId) {
+            <button [routerLink]="['/memes/', dailyMemeId]" class="btn btn-primary btn-lg px-5 py-3 shadow-lg position-relative">
+              <i class="bi bi-eye-fill me-2"></i>
+              Discover Today's Legendary Meme
+              <i class="bi bi-arrow-right ms-2"></i>
+            </button>
+          }
+          @else {
+            Today's meme is still being crafted by our meme wizards. Check back later!
+          }
+          <div class="mt-3">
+            <small class="text-muted">
+              Spoiler alert: It's probably a cat meme. It's always a cat meme. <i class="bi bi-heart-eyes text-danger"></i>
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--end::Row-->
+</div>
+<!--end::Container-->

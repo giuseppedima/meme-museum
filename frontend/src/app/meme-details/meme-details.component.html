@@ -1,0 +1,375 @@
+<div class="container-fluid">
+  <!-- Back button -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <button type="button" class="btn btn-outline-secondary" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i> Back to Memes
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  @if (loading) {
+    <div class="row">
+      <div class="col-12">
+        <div class="text-center py-5">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2">Loading meme...</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Error state -->
+  @else if (error) {
+    <div class="row">
+      <div class="col-12">
+        <div class="alert alert-danger" role="alert">
+          <i class="bi bi-exclamation-triangle"></i> {{ error }}
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Meme content -->
+  @else if (meme) {
+    <div class="row">
+      <!-- Meme image and details -->
+      <div class="col-lg-8">
+        <div class="card">
+          <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+              @if (editingMeme) {
+                <!-- Edit meme form -->
+                <form [formGroup]="editMemeForm" (ngSubmit)="saveEditMeme()" class="flex-grow-1 me-3">
+                  <div class="mb-2">
+                    <input 
+                      formControlName="title" 
+                      class="form-control" 
+                      placeholder="Meme title..."
+                      [class.is-invalid]="editMemeForm.get('title')?.invalid && editMemeForm.get('title')?.touched">
+                    @if (editMemeForm.get('title')?.invalid && editMemeForm.get('title')?.touched) {
+                      <div class="invalid-feedback">
+                        @if (editMemeForm.get('title')?.errors?.['required']) {
+                          Title is required
+                        }
+                        @if (editMemeForm.get('title')?.errors?.['maxlength']) {
+                          Title must be less than 200 characters
+                        }
+                      </div>
+                    }
+                  </div>
+                  <div class="mb-2">
+                    <app-tag-input
+                      formControlName="tags" 
+                      placeholder="Add tags..."
+                      cssClass="form-control form-control-sm"
+                      [class.is-invalid]="editMemeForm.get('tags')?.invalid && editMemeForm.get('tags')?.touched">
+                    </app-tag-input>
+                    @if (editMemeForm.get('tags')?.invalid && editMemeForm.get('tags')?.touched) {
+                      <div class="invalid-feedback">
+                        @if (editMemeForm.get('tags')?.errors?.['maxlength']) {
+                          Tags must be less than 500 characters
+                        }
+                      </div>
+                    }
+                  </div>
+                  <div class="d-flex gap-2">
+                    <button type="button" 
+                      class="btn btn-danger btn-sm" 
+                      (click)="cancelEditMeme()">
+                      <i class="bi bi-x"></i> Cancel
+                    </button>
+                    <button type="submit" 
+                      class="btn btn-primary btn-sm" 
+                      [disabled]="editMemeForm.invalid">
+                      <i class="bi bi-check"></i> Save
+                    </button>
+                  </div>
+                </form>
+              } @else {
+                <!-- Display meme title and actions -->
+                <div class="d-flex justify-content-between align-items-center w-100">
+                  <h3 id="memeTitle" class="card-title mb-0">{{ meme.title }}</h3>
+                  
+                  <div class="d-flex align-items-center gap-2">
+                    <small class="text-muted">{{ meme.createdAt | date:'medium' }}</small>
+                    
+                    <!-- Meme actions dropdown -->
+                    @if (isLoggedIn() && (canEditMeme() || canDeleteMeme())) {
+                      <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                                type="button" 
+                                id="memeDropdown"
+                                data-bs-toggle="dropdown">
+                          <i class="bi bi-three-dots"></i>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="memeDropdown">
+                          @if (canEditMeme()) {
+                            <li>
+                              <button class="dropdown-item" (click)="startEditMeme()">
+                                <i class="bi bi-pencil"></i> Edit
+                              </button>
+                            </li>
+                          }
+                          @if (canDeleteMeme()) {
+                            <li>
+                              <button class="dropdown-item text-danger" (click)="deleteMeme()">
+                                <i class="bi bi-trash"></i> Delete
+                              </button>
+                            </li>
+                          }
+                        </ul>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+          <div class="card-body p-0">
+            <img [src]="'http://localhost:3000/uploads/' + meme.path" 
+                 [alt]="meme.title" 
+                 class="img-fluid w-100"
+                 style="max-height: 600px; object-fit: contain; background-color: #f8f9fa;">
+          </div>
+          <div class="card-footer">
+            <div class="d-flex justify-content-between align-items-center">
+              <!-- Author info -->
+              <app-author-display id="memeAuthor" [author]="meme.user"/>
+
+              <!-- Vote buttons -->
+              <app-vote-buttons
+                [memeId]="meme.id"
+                [upvotesCount]="meme.upvotesCount"
+                [downvotesCount]="meme.downvotesCount"
+                [userVote]="meme.userVote"
+                [disabled]="!isLoggedIn()"
+                [filled]="true"
+                (voteChanged)="onMemeVoteChanged($event)">
+              </app-vote-buttons>
+            </div>
+
+            <!-- Tags -->
+            <div class="mb-3">
+              <app-tags-display id="memeTags"
+                [tags]="meme.tags">
+              </app-tags-display>
+              </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comments section -->
+      <div class="col-lg-4" id="comments">
+        <div class="card">
+          <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h4 class="card-title mb-0">
+                <i class="bi bi-chat-dots"></i> Comments ({{ meme.commentsCount }})
+              </h4>
+            </div>
+            
+            <!-- Comments page size selector on new row -->
+            @if (totalItems > 0) {
+              <div class="d-flex align-items-center gap-2">
+                <label for="commentPageSize" class="form-label mb-0 text-nowrap small">Show:</label>
+                <select 
+                  id="commentPageSize" 
+                  class="form-select form-select-sm" 
+                  style="width: auto; min-width: 100px;"
+                  [value]="pageSize"
+                  (change)="onCommentPageSizeChanged($event)">
+                  @for (option of commentPageSizeOptions; track option.value) {
+                    <option [value]="option.value" [selected]="option.value === pageSize">{{ option.label }}</option>
+                  }
+                </select>
+              </div>
+            }
+          </div>
+          <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+            <!-- Add comment form -->
+            @if (isLoggedIn()) {
+              <form [formGroup]="commentForm" (ngSubmit)="onCommentSubmit()" class="mb-4">
+                <div class="mb-3">
+                  <textarea 
+                    formControlName="content" 
+                    class="form-control" 
+                    rows="3" 
+                    placeholder="Write a comment..."
+                    [class.is-invalid]="commentForm.get('content')?.invalid && commentForm.get('content')?.touched">
+                  </textarea>
+                  @if (commentForm.get('content')?.invalid && commentForm.get('content')?.touched) {
+                    <div class="invalid-feedback">
+                      @if (commentForm.get('content')?.errors?.['required']) {
+                        Comment is required
+                      }
+                      @if (commentForm.get('content')?.errors?.['maxlength']) {
+                        Comment must be less than 500 characters
+                      }
+                    </div>
+                  }
+                </div>
+                <button type="submit" id="postCommentButton"
+                        class="btn btn-primary btn-sm" 
+                        [disabled]="commentForm.invalid">
+                  <i class="bi bi-send"></i> Post Comment
+                </button>
+              </form>
+              <hr>
+            } @else {
+              <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> 
+                 <a routerLink="/login">Login</a> to post comments
+              </div>
+            }
+
+            <!-- Comments loading -->
+            @if (commentsLoading) {
+              <div class="text-center py-3">
+                <div class="spinner-border spinner-border-sm" role="status">
+                  <span class="visually-hidden">Loading comments...</span>
+                </div>
+              </div>
+            }
+
+            <!-- Comments error -->
+            @else if (commentsError) {
+              <div class="alert alert-danger">
+                <i class="bi bi-exclamation-triangle"></i> {{ commentsError }}
+              </div>
+            }
+
+            <!-- No comments -->
+            @else if (comments.length === 0) {
+              <div class="text-center text-muted py-3">
+                <i class="bi bi-chat-square-text display-6"></i>
+                <p class="mt-2">No comments yet</p>
+                <small>Be the first to comment!</small>
+              </div>
+            }
+
+            <!-- Comments list -->
+            @else {
+              <div class="comments-list">
+                @for (comment of comments; track comment.id) {
+                  <div class="comment-item mb-3 p-3 border rounded">
+                    <!-- Comment header -->
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                      <div class="d-flex align-items-center">
+                        <img src="assets/default-profile.png" 
+                             alt="Profile" 
+                             class="rounded-circle me-2" 
+                             style="width: 32px; height: 32px; object-fit: cover;">
+                        <div>
+                          <a [routerLink]="['/memes']" [queryParams]="{ user: comment.user.id }" class="link-primary link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover">{{ comment.user.username }}</a>
+                          <br>
+                          <small class="text-muted">{{ comment.createdAt | date:'short' }}</small>
+                          @if (comment.updatedAt !== comment.createdAt) {
+                            <small class="text-muted"> (edited)</small>
+                          }
+                        </div>
+                      </div>
+                      
+                      <!-- Comment actions -->
+                      @if (isLoggedIn() && (canEditComment(comment) || canDeleteComment(comment))) {
+                        <div class="dropdown">
+                          <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                                  type="button" 
+                                  [id]="'commentDropdown' + comment.id"
+                                  data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots"></i>
+                          </button>
+                          <ul class="dropdown-menu" [attr.aria-labelledby]="'commentDropdown' + comment.id">
+                            @if (canEditComment(comment)) {
+                              <li>
+                                <button class="dropdown-item" (click)="startEditComment(comment)">
+                                  <i class="bi bi-pencil"></i> Edit
+                                </button>
+                              </li>
+                            }
+                            @if (canDeleteComment(comment)) {
+                              <li>
+                                <button class="dropdown-item text-danger" (click)="deleteComment(comment.id)">
+                                  <i class="bi bi-trash"></i> Delete
+                                </button>
+                              </li>
+                            }
+                          </ul>
+                        </div>
+                      }
+                    </div>
+
+                    <!-- Comment content -->
+                    @if (editingCommentId === comment.id) {
+                      <!-- Edit form -->
+                      <form [formGroup]="editCommentForm" (ngSubmit)="saveEditComment(comment.id)">
+                        <div class="mb-2">
+                          <textarea 
+                            formControlName="content" 
+                            class="form-control form-control-sm" 
+                            rows="3"
+                            [class.is-invalid]="editCommentForm.get('content')?.invalid && editCommentForm.get('content')?.touched">
+                          </textarea>
+                          @if (editCommentForm.get('content')?.invalid && editCommentForm.get('content')?.touched) {
+                            <div class="invalid-feedback">
+                              @if (editCommentForm.get('content')?.errors?.['required']) {
+                                Comment is required
+                              }
+                              @if (editCommentForm.get('content')?.errors?.['maxlength']) {
+                                Comment must be less than 500 characters
+                              }
+                            </div>
+                          }
+                        </div>
+                        <div class="d-flex gap-2">
+                          <button type="button" 
+                            class="btn btn-danger btn-sm" 
+                            (click)="cancelEditComment()">
+                            <i class="bi bi-x"></i> Cancel
+                          </button>
+                          <button type="submit" 
+                            class="btn btn-primary btn-sm" 
+                            [disabled]="editCommentForm.invalid">
+                          <i class="bi bi-check"></i> Save
+                          </button>
+                        </div>
+                      </form>
+                    } @else {
+                      <!-- Display comment -->
+                      <p class="mb-0">{{ comment.content }}</p>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Comments pagination -->
+          @if (comments.length > 0 && !commentsLoading && totalItems > 0) {
+            <div class="card-footer">
+              <div class="d-flex flex-column align-items-center">
+                <small class="text-muted mb-2">{{ paginationInfo }}</small>
+                @if (totalItems > pageSize) {
+                  <ngb-pagination
+                    [(page)]="currentPage"
+                    [collectionSize]="totalItems"
+                    [pageSize]="pageSize"
+                    [maxSize]="maxSize"
+                    [rotate]="true"
+                    [boundaryLinks]="false"
+                    [directionLinks]="true"
+                    [size]="'sm'"
+                    (pageChange)="onPageChanged($event)">
+                  </ngb-pagination>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

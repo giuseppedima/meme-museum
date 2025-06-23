@@ -1,0 +1,76 @@
+<!--begin::Container-->
+<div class="container-fluid">
+  <!--begin::Start Navbar Links-->
+  <ul class="navbar-nav">
+    <li class="nav-item">
+      <button type="button" class="nav-link btn btn-link" id="toggleSidebar" (click)="toggleSidebar()" role="button">
+        <i class="bi bi-list"></i>
+      </button>
+    </li>
+    <li class="nav-item d-none d-md-block"><a routerLink="/homepage" routerLinkActive="active" class="nav-link">Homepage</a></li>
+    <li class="nav-item d-none d-md-block"><a routerLink="/memes" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"  class="nav-link">All Memes</a></li>
+  </ul>
+  <!--end::Start Navbar Links-->
+  <!--begin::End Navbar Links-->
+  <ul class="navbar-nav ms-auto">
+    <!--begin::Navbar Search-->
+    <li class="nav-item">
+      <a routerLink="/memes" [queryParams]="{ 'show-filters': 1 }" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">
+        <i class="bi bi-search"></i>
+      </a>
+    </li>
+    <!--end::Navbar Search-->
+    <!--begin::Fullscreen Toggle-->
+    <li class="nav-item">
+      <button type="button" class="nav-link btn btn-link" id="toggleFullscreen" (click)="toggleFullscreen()">
+        <i data-lte-icon="maximize" class="bi bi-arrows-fullscreen"></i>
+        <i data-lte-icon="minimize" class="bi bi-fullscreen-exit" style="display: none"></i>
+      </button>
+    </li>
+    <!--end::Fullscreen Toggle-->
+    @if(authService.isAuthenticated()) {
+      <!--begin::User Menu Dropdown-->
+      <li class="nav-item dropdown user-menu" id="userMenuDropdown">
+        <button type="button" class="nav-link dropdown-toggle btn btn-link" data-bs-toggle="dropdown">
+          <img src="assets/default-profile.png" class="user-image rounded-circle shadow" alt="User Image" />
+          <span ud- class="d-none d-md-inline">{{authService.getUser()?.username || 'Internal error'}}</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+          <!--begin::User Image-->
+          <li class="user-header text-bg-primary">
+            <img src="assets/default-profile.png" class="rounded-circle shadow" alt="User Image" />
+            <p>
+              {{authService.getUser()?.username || 'Internal error'}}
+              <small>Member since {{authService.getUser()?.createdAt | date:'MMM. yyyy'}}</small>
+            </p>
+          </li>
+          <!--end::User Image-->
+          <!--begin::Menu Footer-->
+          <li class="user-footer">
+            <button type="button" class="btn btn-primary btn-flat" [routerLink]="['/memes']" [queryParams]="{user: authService.getUser()?.id}">My memes</button>
+            <button type="button" class="btn btn-danger btn-flat float-end" routerLink="/logout" id="logoutButton">Logout</button>
+          </li>
+          <!--end::Menu Footer-->
+        </ul>
+      </li>
+      <!--end::User Menu Dropdown-->
+      }
+      @else {
+        <!--begin::Login Button-->
+        <li class="nav-item">
+          <button type="button" class="nav-link btn btn-link" routerLink="/login">
+            <i class="bi bi-box-arrow-in-right"></i> Login
+          </button>
+        </li>
+        <!--end::Login Button-->
+        <!--begin::Sign Up Button-->
+        <li class="nav-item">
+          <button type="button" class="nav-link btn btn-link" routerLink="/signup">
+            <i class="bi bi-person-plus-fill"></i> Sign up
+          </button>
+        </li>
+      }
+    </ul>
+  <!--end::End Navbar Links-->
+</div>
+<!--end::Container-->

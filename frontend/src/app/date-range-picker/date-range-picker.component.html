@@ -1,0 +1,54 @@
+<div class="date-range-picker">
+  @if(label) {
+  <label class="form-label">{{ label }}</label>
+  }
+  <div class="input-group">
+    <input
+      name="datepicker"
+      class="form-control"
+      ngbDatepicker
+      #datepicker="ngbDatepicker"
+      [autoClose]="'outside'"
+      (dateSelect)="onDateSelection($event)"
+      [displayMonths]="1"
+      [dayTemplate]="dayTemplate"
+      outsideDays="hidden"
+      [value]="selectedDateRange"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      readonly
+      (focus)="handleFocus()"
+    />
+    <button 
+      class="btn btn-outline-secondary" 
+      (click)="datepicker.toggle()" 
+      type="button"
+      [disabled]="disabled">
+      <i class="bi bi-calendar3"></i>
+    </button>
+    @if(fromDate || toDate) {
+      <button 
+        class="btn btn-outline-secondary" 
+        (click)="clearSelection()" 
+        type="button"
+        [disabled]="disabled"
+        title="Clear selection">
+        <i class="bi bi-x"></i>
+      </button>
+    }
+  </div>
+  
+  <ng-template #dayTemplate let-date let-focused="focused">
+    <span
+      class="custom-day"
+      [class.focused]="focused"
+      [class.range]="isRange(date)"
+      [class.faded]="isHovered(date) || isInside(date)"
+      [class.disabled]="maxDate && date.after(maxDate)"
+      (mouseenter)="hoveredDate = date"
+      (mouseleave)="hoveredDate = null"
+    >
+      {{ date.day }}
+    </span>
+  </ng-template>
+</div>

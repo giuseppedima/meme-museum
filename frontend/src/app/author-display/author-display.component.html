@@ -1,0 +1,12 @@
+<p class="card-text">
+  <img src="assets/default-profile.png" 
+    alt="Profile" 
+    class="rounded-circle me-1" 
+    style="width: 16px; height: 16px; object-fit: cover;"> by 
+    @if(author) {
+      <a [routerLink]="['/memes']" [queryParams]="{user: author.id}" class="link-primary link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover">{{ author.username }}</a>
+    }
+    @else {
+      <span class="text-secondary">Unknown Author</span> 
+    }
+</p>

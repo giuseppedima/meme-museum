@@ -1,0 +1,50 @@
+<!--begin::Sidebar Brand-->
+<div class="sidebar-brand">
+  <!--begin::Brand Link-->
+  <a class="brand-link" routerLink="/">
+    <!--begin::Brand Image-->
+    <img src="assets/logo.png" alt="MemeMuseum Logo" class="brand-image opacity-75 shadow">
+    <!--end::Brand Image-->
+    <!--begin::Brand Text-->
+    <span class="brand-text fw-light">MemeMuseum</span>
+    <!--end::Brand Text-->
+  </a>
+  <!--end::Brand Link-->
+</div>
+<!--end::Sidebar Brand-->
+<!--begin::Sidebar Wrapper-->
+<div class="sidebar-wrapper">
+  <nav class="mt-2">
+    <!--begin::Sidebar Menu-->
+    <ul class="nav sidebar-menu flex-column" role="menu">
+      <li class="nav-header">Navigation</li>
+      <li class="nav-item">
+        <a class="nav-link" routerLinkActive="active" routerLink="/homepage">
+          <i class="nav-icon bi bi-house"></i>
+          <p>Homepage</p>
+        </a>
+      </li>
+      <li class="nav-header">Memes</li>
+      <li class="nav-item">
+        <a class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" routerLink="/memes">
+          <i class="nav-icon bi bi-image"></i>
+          <p>All Memes</p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLinkActive="active" routerLink="/memes/upload">
+          <i class="nav-icon bi bi-upload"></i>
+          <p>Upload</p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLinkActive="active" [routerLink]="['memes','daily']" fragment="todaysmeme">
+          <i class="nav-icon bi bi-calendar"></i>
+          <p>Today's meme</p>
+        </a>
+      </li>
+    </ul>
+    <!--end::Sidebar Menu-->
+  </nav>
+</div>
+<!--end::Sidebar Wrapper-->

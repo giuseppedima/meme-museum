@@ -1,0 +1,110 @@
+<!--begin::Container-->
+<div class="container-fluid">
+  <!--begin::Row-->
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-6 col-lg-4">
+      <!-- Default box -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Register a new membership</h3>
+        </div>
+        <!--begin::Form-->
+        <form [formGroup]="signupForm" (ngSubmit)="handleSignup()">
+          <!--begin::Body-->
+          <div class="card-body">
+          
+            <div class="mb-3">
+              <label for="user" class="form-label">Username</label>
+              <input 
+                type="text" 
+                formControlName="user" 
+                placeholder="mariorossi18"
+                class="form-control"
+                [class.is-invalid]="signupForm.get('user')?.touched && signupForm.controls.user.errors"
+                id="user" 
+                required=""/>
+              @if(signupForm.get('user')?.touched && signupForm.controls.user.errors){
+                <div class="invalid-feedback">
+                @if(signupForm.controls.user.errors['required']){
+                  Username is required
+                }
+                @else if(signupForm.controls.user.errors['minlength']){
+                  Username should contain at least 4 characters
+                }
+                @else if(signupForm.controls.user.errors['maxlength']){
+                  Username should contain at most 16 characters
+                }
+                @else if(signupForm.controls.user.errors['pattern']){
+                  Username should contain only lowercase alphanumeric characters
+                }
+                </div>
+              }
+            </div>
+            <div class="mb-3">
+              <label for="pass" class="form-label">Password</label>
+              <input 
+                type="password" 
+                formControlName="pass" 
+                placeholder="••••••••" 
+                class="form-control"
+                [class.is-invalid]="signupForm.get('pass')?.touched && signupForm.controls.pass.errors"
+                id="pass" 
+                required=""/>
+              @if(signupForm.get('pass')?.touched && signupForm.controls.pass.errors){
+                <div class="invalid-feedback">
+                @if(signupForm.controls.pass.errors['required']){
+                  Password is required
+                }
+                @else if(signupForm.controls.pass.errors['minlength']){
+                  Password should contain at least 4 characters
+                }
+                @else if(signupForm.controls.pass.errors['maxlength']){
+                  Password should contain at most 16 characters
+                }
+                </div>
+              }
+            </div>
+            <div class="mb-3">
+              <label for="confirmPass" class="form-label">Confirm password</label>
+              <input 
+                type="password" 
+                formControlName="confirmPass" 
+                placeholder="••••••••" 
+                class="form-control"
+                [class.is-invalid]="signupForm.get('confirmPass')?.touched && signupForm.controls.confirmPass.errors"
+                id="confirmPass" 
+                required=""/>
+              @if(signupForm.get('confirmPass')?.touched && signupForm.controls.confirmPass.errors){
+                <div class="invalid-feedback">
+                @if(signupForm.controls.confirmPass.errors['required']){
+                  Password confirmation is required
+                }
+                @else if(signupForm.controls.confirmPass.errors['minlength']){
+                  Password should contain at least 4 characters
+                }
+                @else if(signupForm.controls.confirmPass.errors['maxlength']){
+                  Password should contain at most 16 characters
+                }
+                @else if(signupForm.controls.confirmPass.errors["passwordMismatch"]) {
+                  Password confirmation mismatches
+                }
+                </div>
+              }
+            </div>
+            Already have an account? <a routerLink="/login">Login</a>
+          </div>
+          <!-- /.card-body -->
+          <div class="card-footer">
+            <button type="button" class="btn btn-danger" routerLink="/">Cancel</button>
+            <button type="submit" id="signupButton" class="btn btn-primary float-end" [disabled]="signupForm.invalid">Sign up</button>
+          </div>
+          <!-- /.card-footer-->
+        </form>
+        <!--end::Form-->
+      </div>
+      <!-- /.card -->
+    </div>
+  </div>
+  <!--begin::Row-->
+</div>
+<!--end::Container-->

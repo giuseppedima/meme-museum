@@ -1,0 +1,21 @@
+.tags-container {
+  scrollbar-width: thin;
+}
+
+.tags-container::-webkit-scrollbar {
+  height: 4px;
+}
+
+.tags-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.tags-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.tags-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

@@ -1,0 +1,115 @@
+<!--begin::Container-->
+<div class="container-fluid">
+  <!--begin::Row-->
+  <div class="row g-4">
+    <div class="col-md-6">
+      <!-- Default box -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Upload a new meme</h3>
+        </div>
+        <!--begin::Form-->
+        <form [formGroup]="memeUploadForm" (ngSubmit)="handleUpload()">
+          <!--begin::Body-->
+          <div class="card-body">
+              <div class="mb-3">
+              <label for="title" class="form-label">Title</label>
+              <input 
+                type="text"
+                formControlName="title"
+                placeholder="My beautiful meme"
+                class="form-control"
+                [class.is-invalid]="memeUploadForm.get('title')?.touched  && memeUploadForm.controls.title.errors"
+                id="title"
+                required=""/>
+              @if(memeUploadForm.get('title')?.touched && memeUploadForm.controls.title.errors){
+                <div class="invalid-feedback">
+                @if(memeUploadForm.controls.title.errors['required']){
+                  Title is required
+                }
+                @else if(memeUploadForm.controls.title.errors['minlength']){
+                  Title should contain at least 1 character
+                }
+                @else if(memeUploadForm.controls.title.errors['maxlength']){
+                  Title should contain at most 255 characters
+                }
+                </div>
+              }
+            </div>
+            <div class="mb-3">
+              <label for="meme" class="form-label">Meme</label>
+              <input 
+                type="file" 
+                (change)="onFileSelected($event)"
+                (blur)="onFileBlur()"
+                class="form-control"
+                [class.is-invalid]="memeUploadForm.get('meme')?.touched && memeUploadForm.controls.meme.errors"
+                id="meme"
+                accept="image/jpeg, image/png, image/gif"
+                required=""/>
+              @if(memeUploadForm.get('meme')?.touched && memeUploadForm.controls.meme.errors){
+                <div class="invalid-feedback">
+                @if(memeUploadForm.controls.meme.errors['required']){
+                  Meme is required
+                }
+                @if(memeUploadForm.controls.meme.errors['invalidImageType']){
+                  Only extensions .jpg, .jpeg, .png, .gif are allowed.
+                }
+                </div>
+              }
+            </div>
+            <div class="mb-3">
+              <label for="tags" class="form-label">Tags</label>
+              <app-tag-input
+                formControlName="tags" 
+                placeholder="horse, balcony, juan" 
+                cssClass="form-control"
+                [class.is-invalid]="memeUploadForm.get('tags')?.touched && memeUploadForm.controls.tags.errors"
+                inputId="tags"
+                [separatorKeyCodes]="[32,188]"
+                [required]="true"/>
+              @if(memeUploadForm.get('tags')?.touched && memeUploadForm.controls.tags.errors){
+                <div class="invalid-feedback">
+                  @if(memeUploadForm.controls.tags.errors['tagsRequired']){
+                    At least one tag is required
+                  }
+                </div>
+              }
+            </div>
+          </div>
+          <!-- /.card-body -->
+          <div class="card-footer">
+            <button type="button" class="btn btn-danger" routerLink="/">Cancel</button>
+            <button type="submit" class="btn btn-primary float-end" [disabled]="memeUploadForm.invalid" id="uploadButton">Upload</button>
+          </div>
+          <!-- /.card-footer-->
+        </form>
+        <!--end::Form-->
+      </div>
+      <!-- /.card -->
+    </div>
+    <div class="col-md-6">
+      <!-- Default box -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Meme preview</h3>
+        </div>
+        <!--begin::Body-->
+        <div class="card-body">
+          <div class="d-flex justify-content-center">
+            @if(preview && !memeUploadForm.controls.meme.errors){
+              <img src="{{preview}}" class="img-fluid" alt="meme preview"/>
+            }
+            @else {
+              <img src="assets/no_image.png" class="img-fluid" alt="meme preview"/>
+            }
+          </div>
+        </div>
+        <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+    </div>
+  </div>
+  <!--end::Row-->
+</div>
+<!--end::Container-->

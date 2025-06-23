@@ -1,0 +1,45 @@
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins';
+
+.comment-item {
+  transition: background-color 0.2s ease;
+}
+
+.comment-item:hover {
+  background-color: var(--bs-light);
+}
+
+.comments-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.dropdown-toggle::after {
+  display: none;
+}
+
+/* Custom scrollbar for comments */
+.comments-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.comments-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.comments-list::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.comments-list::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+@include media-breakpoint-down(lg) {
+  .comments-list {
+    max-height: 300px;
+  }
+}

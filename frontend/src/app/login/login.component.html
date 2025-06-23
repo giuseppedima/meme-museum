@@ -1,0 +1,83 @@
+<!--begin::Container-->
+<div class="container-fluid">
+  <!--begin::Row-->
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-6 col-lg-4">
+      <!-- Default box -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Login to start your session</h3>
+        </div>
+        <!--begin::Form-->
+        <form [formGroup]="loginForm" (ngSubmit)="handleLogin()">
+          <!--begin::Body-->
+          <div class="card-body">
+          
+            <div class="mb-3">
+              <label for="user" class="form-label">Username</label>
+              <input 
+                type="text" 
+                formControlName="user" 
+                placeholder="mariorossi18" 
+                class="form-control"
+                [class.is-invalid]="loginForm.get('user')?.touched && loginForm.controls.user.errors"
+                id="user" 
+                required=""/>
+              @if(loginForm.get('user')?.touched && loginForm.controls.user.errors){
+                <div class="invalid-feedback">
+                @if(loginForm.controls.user.errors['required']){
+                  Username is required
+                }
+                @else if(loginForm.controls.user.errors['minlength']){
+                  username should contain at least 4 characters
+                }
+                @else if(loginForm.controls.user.errors['maxlength']){
+                  Username should contain at most 16 characters
+                }
+                @else if(loginForm.controls.user.errors['pattern']){
+                  Username should contain only lowercase alphanumeric characters
+                }
+                </div>
+              }
+            </div>
+            <div class="mb-3">
+              <label for="pass" class="form-label">Password</label>
+              <input 
+                type="password" 
+                formControlName="pass" 
+                placeholder="••••••••" 
+                class="form-control"
+                [class.is-invalid]="loginForm.get('pass')?.touched  && loginForm.controls.pass.errors"
+                id="pass" 
+                required=""/>
+              @if(loginForm.get('pass')?.touched  && loginForm.controls.pass.errors){
+                <div class="invalid-feedback">
+                @if(loginForm.controls.pass.errors['required']){
+                  Password is required
+                }
+                @else if(loginForm.controls.pass.errors['minlength']){
+                  Password should contain at least 4 characters
+                }
+                @else if(loginForm.controls.pass.errors['maxlength']){
+                  Password should contain at most 16 characters
+                }
+                </div>
+              }
+            </div>
+            Don't have an account? <a routerLink="/signup">Sign up</a>
+          </div>
+          <!-- /.card-body -->
+          <div class="card-footer">
+            <button type="button" class="btn btn-danger" routerLink="/">Cancel</button>
+            <button type="submit" id="loginButton" class="btn btn-primary float-end" [disabled]="loginForm.invalid">Login</button>
+          </div>
+          <!-- /.card-footer-->
+        </form>
+        <!--end::Form-->
+      </div>
+      <!-- /.card -->
+    </div>
+  </div>
+  <!--begin::Row-->
+</div>
+<!--end::Container-->

@@ -1,0 +1,46 @@
+<app-navbar class="app-header navbar navbar-expand bg-body"></app-navbar>
+<app-sidebar class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark"></app-sidebar>
+<!--begin::App Main-->
+<main class="app-main">
+  <!--begin::App Content Header-->
+  <div class="app-content-header">
+    <!--begin::Container-->
+    <div class="container-fluid">
+      <!--begin::Row-->
+      <div class="row">
+        <div class="col-sm-6"><h3 class="mb-0">{{ pageTitle }}</h3></div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-end">
+            @for(route of getRoute(); track route; let i = $index) {
+              @if ($last) {
+                <li class="breadcrumb-item active" aria-current="page">{{route.charAt(0).toUpperCase() + route.slice(1)}}</li>
+              }
+              @else {
+                <li class="breadcrumb-item">
+                  <a [routerLink]="getRoute().slice(0, i + 1).join('/')">{{route.charAt(0).toUpperCase() + route.slice(1)}}</a>
+                </li>
+              }
+            }
+          </ol>
+        </div>
+      </div>
+      <!--end::Row-->
+    </div>
+    <!--end::Container-->
+  </div>
+  <!--end::App Content Header-->
+  <router-outlet class="app-content"></router-outlet>
+</main>
+<app-footer class="app-footer"></app-footer>
+
+<!-- Back to Top Button -->
+@if (showBackToTop) {
+  <button 
+    type="button" 
+    class="btn btn-primary position-fixed bottom-0 end-0 m-3 rounded-circle d-flex align-items-center justify-content-center shadow"
+    style="width: 50px; height: 50px; z-index: 1050;"
+    (click)="scrollToTop()"
+    title="Back to top">
+    <i class="bi bi-arrow-up fs-5"></i>
+  </button>
+}

@@ -1,0 +1,14 @@
+<tag-input
+  [ngModel]="value"
+  (ngModelChange)="onChange($event)"
+  (blur)="onTouched()"
+  [placeholder]="placeholder"
+  [class]="cssClass"
+  [id]="inputId"
+  [separatorKeyCodes]="separatorKeyCodes"
+  [onAdding]="onTagAdding"
+  [errorMessages]="errorMessages"
+  [validators]="validators"
+  [theme]="theme"
+  [required]="required"
+  [disabled]="disabled"/>

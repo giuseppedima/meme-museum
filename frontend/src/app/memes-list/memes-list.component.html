@@ -1,0 +1,251 @@
+<div class="container-fluid">
+  <!--begin::Row-->
+  <div class="row">
+    <div class="col-12">
+      <!-- Accordion for filters -->
+      <div ngbAccordion class="mb-3">
+        <div ngbAccordionItem class="card">
+          <h2 ngbAccordionHeader class="card-header">
+            <button ngbAccordionButton type="button" class="btn btn-link text-decoration-none w-100 text-start">
+              <span class="card-title" id="filters-panel">Filters</span>
+              <span class="badge text-bg-primary ms-2">{{ activeFiltersCount }} active</span>
+            </button>
+          </h2>
+          <div ngbAccordionCollapse>
+            <div ngbAccordionBody class="card-body">
+              <ng-template>
+                <form [formGroup]="searchForm" (ngSubmit)="handleSearch()">
+                  <div class="row g-3">
+                    <!-- Title Search - Riga 1 -->
+                    <div class="col-12">
+                      <label for="title" class="form-label">Search by Title</label>
+                      <input 
+                        type="text"
+                        formControlName="title"
+                        placeholder="Enter meme title..."
+                        class="form-control"
+                        id="title"/>
+                    </div>
+
+                    <!-- User Filter - Riga 2 -->
+                    <div class="col-12">
+                      <label for="userId" class="form-label">Filter by User</label>
+                      <ng-select
+                        formControlName="userId"
+                        placeholder="Select a user..."
+                        [clearable]="true"
+                        [searchable]="true"
+                        [loading]="usersLoading"
+                        bindLabel="username"
+                        bindValue="id"
+                        id="userId">
+                        @for(user of users; track user.id){
+                        <ng-option [value]="user.id">
+                          {{ user.username }}
+                        </ng-option>
+                      }
+                      </ng-select>
+                    </div>
+
+                    <!-- Tags - Riga 3 -->
+                    <div class="col-12">
+                      <label for="tags" class="form-label">Tags</label>
+                      <app-tag-input
+                        formControlName="tags"
+                        placeholder="Add tags..."
+                        cssClass="form-control"
+                        inputId="tags"
+                        [separatorKeyCodes]="[32, 188, 13]"
+                        theme="bootstrap"/>
+                    </div>
+
+                    <!-- Sort Controls - Riga 4 -->
+                    <div class="col-sm-6">
+                      <label for="sortBy" class="form-label">Sort By</label>
+                      <select formControlName="sortBy" class="form-select" id="sortBy">
+                        @for (option of sortOptions; track option.value) {
+                          <option [value]="option.value">{{ option.label }}</option>
+                        }
+                      </select>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="sortOrder" class="form-label">Order</label>
+                      <select formControlName="sortOrder" class="form-select" id="sortOrder">
+                        @for (option of sortOrderOptions; track option.value) {
+                          <option [value]="option.value">{{ option.label }}</option>
+                        }
+                      </select>
+                    </div>
+
+                    <div class="col-12">
+                      <app-date-range-picker
+                        formControlName="dateRange"
+                        label="Date Range"
+                        placeholder="Select date range"
+                        [maxDate]="calendar.getToday()">
+                      </app-date-range-picker>
+                    </div>
+
+                    <!-- Action Buttons - Riga 6 -->
+                    <div class="col-12">
+                      <div class="d-flex gap-2 justify-content-start">
+                        <button type="submit" class="btn btn-primary">
+                          <i class="bi bi-search"></i> Search
+                        </button>
+                        <button type="button" class="btn btn-secondary" (click)="resetFilters()">
+                          <i class="bi bi-arrow-clockwise"></i> Reset
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--end::Row-->
+  <!--begin::Row-->
+  <div class="row">
+    <div class="col-12">
+      <!-- Default box -->
+      <div class="card">
+        <div class="card-header">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+              <div class="d-flex align-items-center gap-2">
+                <label for="pageSize" class="form-label mb-0 text-nowrap">Show:</label>
+                <select 
+                  id="pageSize" 
+                  class="form-select form-select-sm" 
+                  style="width: auto;"
+                  [value]="pageSize"
+                  (change)="onPageSizeChanged($event)">
+                  @for (option of pageSizeOptions; track option.value) {
+                    <option [value]="option.value" [selected]="option.value === pageSize">{{ option.label }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" routerLink="upload">
+                <i class="bi bi-upload"></i> Upload meme
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <!-- Loading state -->
+          @if (loading) {
+            <div class="text-center py-4">
+              <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <p class="mt-2">Searching memes...</p>
+            </div>
+          }
+
+          <!-- Error state -->
+          @else if (error) {
+            <div class="alert alert-danger" role="alert">
+              <i class="bi bi-exclamation-triangle"></i> {{ error }}
+            </div>
+          }
+
+          <!-- Empty state -->
+          @else if (memes.length === 0 && !loading) {
+            <div class="text-center py-4">
+              <i class="bi bi-search display-1 text-muted"></i>
+              <h4 class="mt-3">No memes found</h4>
+              <p class="text-muted">Try adjusting your search criteria</p>
+            </div>
+          }
+
+          <!-- Memes list -->
+          @else {
+            <div class="row">
+              @for (meme of memes; track meme.id) {
+                <div class="col-lg-4 col-md-6 mb-4">
+                  <div class="card h-100" (click)="navigateToMeme($event, meme.id)" style="cursor: pointer;">
+                    <img [src]="'http://localhost:3000/uploads/' + meme.path" 
+                         [alt]="meme.title" 
+                         class="card-img-top"
+                         style="height: 400px; object-fit: cover;">
+                    
+                    <div class="card-body d-flex flex-column">
+                      <h5 class="card-title">{{ meme.title }}</h5>
+                      
+                      <!-- Author -->
+                      <app-author-display [author]="meme.user"/>
+                      
+                      <!-- Tags -->
+                      <div class="mb-2">
+                        <app-tags-display
+                          [tags]="meme.tags"
+                          badgeClass="bg-secondary">
+                        </app-tags-display>
+                      </div>
+
+                      <!-- Buttons -->
+                      <div class="mt-auto">
+                        <div class="d-flex justify-content-between align-items-center">
+                          <div class="d-flex align-items-center gap-1">
+                            <app-vote-buttons
+                              [memeId]="meme.id"
+                              [upvotesCount]="meme.upvotesCount"
+                              [downvotesCount]="meme.downvotesCount"
+                              [userVote]="meme.userVote"
+                              [disabled]="!isLoggedIn()"
+                              size="sm"
+                              (voteChanged)="onMemeVoteChanged($event)">
+                            </app-vote-buttons>
+                            
+                            <span class="mx-1"></span>
+                            
+                            <a [routerLink]="[meme.id]" fragment="comments">
+                              <button type="button" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-chat"></i> {{ meme.commentsCount }}
+                              </button>
+                            </a>
+                          </div>
+                          
+                          <small class="text-muted">
+                            {{ meme.createdAt | date:'short' }}
+                          </small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+        <!-- Pagination footer -->
+        @if (memes.length > 0 && !loading) {
+          <div class="card-footer">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+              <div class="mb-2 mb-md-0 text-center text-md-start">
+                <small class="text-muted">{{ paginationInfo }}</small>
+              </div>
+              <ngb-pagination
+                [(page)]="currentPage"
+                [collectionSize]="totalItems"
+                [pageSize]="pageSize"
+                [maxSize]="maxSize"
+                [rotate]="true"
+                [boundaryLinks]="true"
+                [directionLinks]="true"
+                (pageChange)="onPageChanged($event)"
+                class="mb-0">
+              </ngb-pagination>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+  <!--end::Row-->
+</div>

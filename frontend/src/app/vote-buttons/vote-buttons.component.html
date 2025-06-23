@@ -1,0 +1,73 @@
+<div class="btn-group" role="group">
+  <!-- Template per il tooltip -->
+  <ng-template #loginTooltip>
+    <strong>Login Required</strong><br>
+    You must login to vote on memes
+  </ng-template>
+
+  <!-- Upvote button -->
+  @if (userVote === 'upvote') {
+    <button 
+      type="button" 
+      [class]="'btn btn-success' + (size ? ' btn-' + size : '')" 
+      (click)="onVote('upvote')"
+      [disabled]="disabled || isVoting"
+      [ngbTooltip]="disabled ? loginTooltip : ''"
+      [placement]="'top'">
+      @if (isVoting) {
+        <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+      } @else {
+        <i [class]="filled ? 'bi bi-hand-thumbs-up-fill' : 'bi bi-hand-thumbs-up'"></i>
+      }
+      {{ upvotesCount }}
+    </button>
+  } @else {
+    <button 
+      type="button" 
+      [class]="'btn btn-outline-success' + (size ? ' btn-' + size : '')" 
+      (click)="onVote('upvote')"
+      [disabled]="disabled || isVoting"
+      [ngbTooltip]="disabled ? loginTooltip : ''"
+      [placement]="'top'">
+      @if (isVoting) {
+        <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+      } @else {
+        <i class="bi bi-hand-thumbs-up"></i>
+      }
+      {{ upvotesCount }}
+    </button>
+  }
+
+  <!-- Downvote button -->
+  @if (userVote === 'downvote') {
+    <button 
+      type="button" 
+      [class]="'btn btn-danger' + (size ? ' btn-' + size : '')" 
+      (click)="onVote('downvote')"
+      [disabled]="disabled || isVoting"
+      [ngbTooltip]="disabled ? loginTooltip : ''"
+      [placement]="'top'">
+      @if (isVoting) {
+        <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+      } @else {
+        <i [class]="filled ? 'bi bi-hand-thumbs-down-fill' : 'bi bi-hand-thumbs-down'"></i>
+      }
+      {{ downvotesCount }}
+    </button>
+  } @else {
+    <button 
+      type="button" 
+      [class]="'btn btn-outline-danger' + (size ? ' btn-' + size : '')" 
+      (click)="onVote('downvote')"
+      [disabled]="disabled || isVoting"
+      [ngbTooltip]="disabled ? loginTooltip : ''"
+      [placement]="'top'">
+      @if (isVoting) {
+        <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+      } @else {
+        <i class="bi bi-hand-thumbs-down"></i>
+      }
+      {{ downvotesCount }}
+    </button>
+  }
+</div>
